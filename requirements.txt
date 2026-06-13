@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+streamlit
+requests
+python-dotenv
+langgraph
+langchain
+langchain-core
+langchain-groq
+chromadb
+sentence-transformers
+openpyxl
+pydantic
