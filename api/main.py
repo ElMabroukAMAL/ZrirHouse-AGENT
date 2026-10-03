@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage, AIMessage
+from fastapi.middleware.cors import CORSMiddleware
 
 from agent.graph import agent_graph
 
@@ -8,6 +9,13 @@ app = FastAPI(
     title="Zrir House AI Agent",
     description="AI-powered sales assistant for Zrir House artisan products",
     version="1.0.0"
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # ── Request / Response Models ──────────────────────────────────────────────────
