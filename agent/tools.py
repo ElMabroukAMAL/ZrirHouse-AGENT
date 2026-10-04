@@ -45,14 +45,13 @@ def build_catalog():
         Ingredients: {', '.join(p['ingredients'])}
         Weight: {p['weight_grams']}g
         Price: {p['price_dt']} DT / {p['price_usd']} USD
-        In stock: {p['in_stock']}
+        In stock: {'Yes' if p['stock'] > 0 else 'No'}
         """.strip()
 
         documents.append(text)
         ids.append(p["id"])
         metadatas.append({
             "name": p["name"],
-            "in_stock": str(p["in_stock"]),
             "price_dt": p["price_dt"],
             "price_usd": p["price_usd"],
             "weight_grams": p["weight_grams"],
@@ -95,8 +94,37 @@ def search_catalog(query: str) -> str:
 
     return "\n\n".join(output)
 
+# ── Tool 3: get_all_products ───────────────────────────────────────────────────
 
-# ── Tool 2: check_availability ─────────────────────────────────────────────────
+@tool
+def get_all_products() -> str:
+    """
+    Return the complete Zrir House product catalog.
+    Use this when the customer asks what products are available,
+    asks what you sell, wants the full catalog, or asks to see all products.
+    """
+    products = load_products()
+
+    output = []
+
+    for p in products:
+        status = "In stock" if p["stock"] > 0 else "Out of stock"
+
+        # Extract size from the product name
+        size = p["name"].split(" - ")[-1]
+
+        output.append(
+            f"Product: {p['product_line']}\n"
+            f"Size: {size}\n"
+            f"Weight: {p['weight_grams']}g\n"
+            f"Price: {p['price_dt']} DT / {p['price_usd']} USD\n"
+            f"Availability: {status}"        
+            )
+
+    return "\n\n".join(output)
+
+
+# ── Tool 3: check_availability ─────────────────────────────────────────────────
 
 @tool
 def check_availability(product_name: str) -> str:
@@ -124,7 +152,7 @@ def check_availability(product_name: str) -> str:
     # Format availability for each match
     output = []
     for p in matches:
-        status = "In stock" if p["in_stock"] else "Out of stock"
+        status = "In stock" if p["stock"] > 0 else "Out of stock"
         output.append(
             f"{p['name']} ({p['weight_grams']}g) — "
             f"{p['price_dt']} DT / {p['price_usd']} USD — {status}"
@@ -133,7 +161,7 @@ def check_availability(product_name: str) -> str:
     return "\n".join(output)
 
 
-# ── Tool 3: log_order ──────────────────────────────────────────────────────────
+# ── Tool 4: log_order ──────────────────────────────────────────────────────────
 
 import datetime
 from openpyxl import Workbook, load_workbook

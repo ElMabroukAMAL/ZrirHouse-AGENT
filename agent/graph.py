@@ -11,7 +11,7 @@ from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 
 from agent.state import AgentState
-from agent.tools import search_catalog, check_availability, log_order
+from agent.tools import search_catalog, get_all_products, check_availability, log_order
 
 load_dotenv()
 
@@ -32,26 +32,35 @@ PRICE_LIST = build_price_list()
 
 # ── LLM Setup ──────────────────────────────────────────────────────────────────
 llm = ChatGroq(
+    model="openai/gpt-oss-20b",
+    temperature=0
+)
+"""llm = ChatGroq(
     #model="llama-3.3-70b-versatile",
     model="llama-3.1-8b-instant",
     api_key=os.getenv("GROQ_API_KEY"),
     temperature=0.1,
     max_tokens=512
-)
-"""llm = ChatOpenAI(
+)llm = ChatOpenAI(
     model="meta-llama/llama-3.3-70b-instruct:free",
     api_key=os.getenv("OPENROUTER_API_KEY"),
     base_url="https://openrouter.ai/api/v1",
     temperature=0.3,
     max_tokens=512
 )"""
-tools = [search_catalog, check_availability, log_order]
+tools = [search_catalog, get_all_products, check_availability, log_order]
 llm_with_tools = llm.bind_tools(tools)
 
 # ── System Prompt ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = f"""
 You are a sales assistant for Zrir House, a Tunisian handmade nut blends business.
-Be warm, friendly, and concise. Use search_catalog before answering product questions.
+Be warm, friendly, and concise. 
+## PRODUCT INFORMATION
+- When the customer asks what you sell, asks for the full catalog, or asks to see all products, ALWAYS call get_all_products.
+- When the customer asks about a specific product, ingredient, price, or size, use search_catalog.
+- When the customer asks whether a specific product/size is in stock, use check_availability.
+- Never assume or invent availability. Use the tool results.
+
 You help customers by:
 - Answering questions about products, ingredients, sizes, and prices
 - Checking product availability
