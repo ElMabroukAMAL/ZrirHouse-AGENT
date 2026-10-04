@@ -3,16 +3,19 @@ import os
 from pathlib import Path
 from langchain_core.tools import tool
 import chromadb
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+#from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
 
 # ── Setup ──────────────────────────────────────────────────────────────────────
 
 PRODUCTS_PATH = Path(__file__).parent.parent / "data" / "products.json"
 
 # Embedding function using a free local model
-embedding_fn = SentenceTransformerEmbeddingFunction(
+"""embedding_fn = SentenceTransformerEmbeddingFunction(
     model_name="all-MiniLM-L6-v2"
-)
+)"""
+
+embedding_fn = DefaultEmbeddingFunction()
 
 # ChromaDB in-memory client
 chroma_client = chromadb.Client()
@@ -59,8 +62,14 @@ def build_catalog():
     collection.add(documents=documents, ids=ids, metadatas=metadatas)
     print(f"Catalog loaded: {len(products)} products indexed")
 
-# Build catalog when tools.py is imported
-build_catalog()
+# Lazy loading — build catalog on first call
+_catalog_built = False
+
+def ensure_catalog():
+    global _catalog_built
+    if not _catalog_built:
+        build_catalog()
+        _catalog_built = True
 
 # ── Tool 1: search_catalog ─────────────────────────────────────────────────────
 
@@ -70,6 +79,7 @@ def search_catalog(query: str) -> str:
     Search the Zrir House product catalog using a natural language query.
     Use this when the customer asks about products, ingredients, prices, or sizes.
     """
+    ensure_catalog()
     results = collection.query(
         query_texts=[query],
         n_results=2  # return top 3 most relevant products

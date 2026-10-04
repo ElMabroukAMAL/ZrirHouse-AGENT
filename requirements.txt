@@ -8,6 +8,6 @@ langchain
 langchain-core
 langchain-groq
 chromadb
-sentence-transformers
+#sentence-transformers
 openpyxl
 pydantic
