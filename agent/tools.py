@@ -167,7 +167,7 @@ def check_availability(product_name: str) -> str:
 # ── Tool 4: log_order ──────────────────────────────────────────────────────────
 
 
-HEADERS = ["ID", "Name", "Phone", "Address", "Products", "Total (DT)", "Total (USD)", "Message", "Date"]
+HEADERS = ["ID", "Name", "Phone", "Address", "Products", "Total (DT)", "Total (USD)", "Date"]
 
 def get_google_sheet():
     """Connect to Google Sheets using environment variables."""
@@ -176,7 +176,7 @@ def get_google_sheet():
         "type": "service_account",
         "project_id": os.getenv("GOOGLE_PROJECT_ID"),
         "private_key_id": os.getenv("GOOGLE_PRIVATE_KEY_ID"),
-        "private_key": os.getenv("GOOGLE_PRIVATE_KEY", "").replace("\\n", "\n"),
+        "private_key": os.getenv("GOOGLE_PRIVATE_KEY", "").replace("\\n", "\n").strip(),
         "client_email": os.getenv("GOOGLE_CLIENT_EMAIL"),
         "client_id": os.getenv("GOOGLE_CLIENT_ID"),
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -214,8 +214,7 @@ def log_order(
     address: str,
     products: str,
     total_dt: str,
-    total_usd: str,
-    message: str
+    total_usd: str
 ) -> str:
     """
     Log a customer order directly to Google Sheets.
@@ -230,7 +229,6 @@ def log_order(
     - products with sizes
     - total in DT
     - total in USD
-    - customer message
 
     If some optional information is missing, use 'Not provided'.
     """
@@ -241,7 +239,8 @@ def log_order(
         # Check whether the sheet already has headers
         existing = ws.get_all_values()
 
-        if not existing:
+
+        if not existing or not any(existing[0]):
             ws.append_row(HEADERS)
 
         # Generate next order ID
@@ -261,7 +260,6 @@ def log_order(
             products,
             total_dt,
             total_usd,
-            message,
             timestamp
         ])
 
