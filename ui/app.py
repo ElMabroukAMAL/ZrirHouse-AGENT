@@ -218,7 +218,7 @@ if "_suggestion" in st.session_state:
             "message": prompt,
             "history": st.session_state.history,
             "language": st.session_state.language
-        })
+        }, timeout=120)
         data = response.json()
         agent_reply = data["response"] if "response" in data else t["error"]
         st.session_state.history = data.get("history", st.session_state.history)
@@ -244,7 +244,7 @@ if prompt := st.chat_input(t["chat_placeholder"]):
                     "message": prompt,
                     "history": st.session_state.history,
                     "language": st.session_state.language
-                })
+                }, timeout=120)
                 data = response.json()
                 agent_reply = data["response"] if "response" in data else t["error"]
                 st.session_state.history = data.get("history", st.session_state.history)
