@@ -13,7 +13,7 @@ An end-to-end multilingual AI sales agent for **Zrir House**, a Tunisian busines
 - 📦 **Real-time Stock Checking** — automatic availability verification
 - 🛒 **Smart Order Management** — collects name, phone, address, products before logging
 - 📊 **Google Sheets Integration** — orders saved automatically in real-time
-- 🌍 **Trilingual** — full UI and responses in English, French, and Arabic (RTL)
+- 🌍 **Trilingual** — full UI and responses in English, French, and Arabic
 - 🚀 **Production Deployed** — FastAPI backend + Streamlit frontend on Render
 
 ---
