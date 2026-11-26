@@ -44,7 +44,7 @@ LLaMA 3.3 70B (Groq API)
 | Component | Technology |
 |-----------|-----------|
 | Agent Logic | LangGraph |
-| LLM | LLaMA 3.3 70B (Groq API) |
+| LLM | GPT-OSS 20B (Groq API) |
 | Vector Store | ChromaDB |
 | Embeddings | ONNX Runtime (DefaultEmbeddingFunction) |
 | Backend API | FastAPI + Uvicorn |
